@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -26,14 +28,14 @@ class Joke extends StatefulWidget {
 
 class _JokeState extends State<Joke> {
   String _joke = '';
-  List<String> _jokes = [];
+  final List<String> jokes = [];
 
   Future<void> getJoke() async {
     http.Response response = await http
         .get(Uri.parse('https://official-joke-api.appspot.com/jokes/random'));
-    Map Data = jsonDecode(response.body);
+    Map data = jsonDecode(response.body);
     setState(() {
-      _joke = Data['setup'] + '...' + Data['punchline'];
+      _joke = data['setup'] + '...' + data['punchline'];
     });
   }
 
@@ -43,9 +45,15 @@ class _JokeState extends State<Joke> {
     });
   }
 
+  void delJokes(int index) {
+    setState(() {
+      jokes.removeAt(index);
+    });
+  }
+
   void saveJoke() {
     setState(() {
-      _jokes.add(_joke);
+      jokes.add(_joke);
     });
   }
 
@@ -93,6 +101,15 @@ class _JokeState extends State<Joke> {
                       },
                       child: Text('Clear'),
                     ),
+                    SizedBox(width: 20.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          jokes.clear();
+                        });
+                      },
+                      child: Text('Clear Saved'),
+                    ),
                   ],
                 ),
                 Padding(
@@ -103,10 +120,10 @@ class _JokeState extends State<Joke> {
                 Text('Saved Jokes:'),
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: _jokes.length,
+                  itemCount: jokes.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(_jokes[index]),
+                      title: Text(jokes[index]),
                     );
                   },
                 ),
